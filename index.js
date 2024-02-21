@@ -43,10 +43,28 @@ const importButton = document.querySelector(".add-book-form__import-button")
  */
 const importTextarea = document.querySelector(".add-book-form__import")
 
-// Рендерим список книг
+// Рендерим список книг при открытии страницы
 if (storage.books?.length > 0) {
-  storage.books.forEach(book => addBookElementToDom(generateBookElement(book)))
+  renderBooks()
   exportButton.removeAttribute("disabled")
+}
+
+function renderBooks() {
+  storage.books.forEach(book => addBookElementToDom(generateBookElement(book)))
+}
+
+function reRenderBooks() {
+  // удалить все старые
+  const allBooks = document.querySelectorAll('[data-book-id]');
+  const uuidsForDelete = new Set(storage.books.map(book => book.uuid))
+  allBooks.forEach(bookDomElement => {
+    if (uuidsForDelete.has(bookDomElement.getAttribute('data-book-id'))) {
+      bookDomElement.remove()
+    }
+  });
+
+  // отрендерить все что есть в localStorage
+  renderBooks()
 }
 
 /**
@@ -72,9 +90,9 @@ function generateBookElement(book) {
         uuid: book.uuid
       }) : storageBook
     )
-    location.reload();
+    reRenderBooks();
   })
-
+  bookElement.querySelector("li").setAttribute("data-book-id", book.uuid)
   return bookElement;
 }
 
@@ -159,16 +177,15 @@ sortSelect.addEventListener("change", (e) => {
   switch(e.target.options[e.target.selectedIndex].value) {
     case "Рейтинг":
       storage.books = sortBooksByNumberField(storage.books, "rating")
-      location.reload();
+      reRenderBooks();
       break;
     case "Год":
       storage.books = sortBooksByNumberField(storage.books, "year")
-      location.reload();
+      reRenderBooks();
       break;
     case "Жанр":
-      storage.books = storage.books.sort((a, b) => {
-        return a.genre.localeCompare(b.genre)
-      });
+      storage.books = storage.books.sort((a, b) => a.genre.localeCompare(b.genre));
+      reRenderBooks();
       break;
   }
 })
