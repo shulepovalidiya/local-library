@@ -1,11 +1,28 @@
 export class Book {
   constructor(bookData) {
+    if (!bookData.title) {
+      throw new Error("Не задано название")
+    }
+    if (!bookData.author) {
+      throw new Error("Не задан автор")
+    }
+    if (!bookData.year) {
+      throw new Error("Не задан год")
+    }
+    if (!bookData.genre) {
+      throw new Error("Не задан жанр")
+    }
+    if (!bookData.rating && !bookData.rating_) {
+      throw new Error("Не задан рейтинг")
+    }
     this.title = bookData.title
     this.author = bookData.author
     this.year = bookData.year
     this.genre = bookData.genre
-    this.uuid = bookData.uuid
     this.rating = bookData.rating || bookData.rating_
+
+    // уникальный идентификатор
+    this.uuid = bookData.uuid || this._generateUUID()
   }
 
   set rating(value) {
@@ -28,7 +45,31 @@ export class Book {
     return this.getAll
   }
 
+  toExport() {
+    let {title, author, year, genre, rating} = this;
+    return {
+      title,
+      author,
+      year,
+      genre,
+      rating
+    }
+  }
+
+  /**
+   * Генерирует уникальный id книги
+   * @return {string}
+   * @private
+   */
+  _generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 }
+
+// Далее тестовые данные (по условию задания):
 
 const booksData = [
   {
@@ -74,4 +115,3 @@ console.log(filterBooksByGenre(books, "Повесть"))
 console.log(filterBooksByGenre(books, ""))
 console.log(findBookByTitle(books, "1984"))
 console.log(findBookByTitle(books, ""))
-
