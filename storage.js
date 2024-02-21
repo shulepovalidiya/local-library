@@ -6,16 +6,13 @@ export class Storage {
   }
 
   get books() {
-    if (this.hasBooks) {
-      return JSON.parse(localStorage.getItem(this.key)).map(book => {
+      return JSON.parse(localStorage.getItem(this.key) || "[]").map(book => {
         try {
           return new Book(book)
         } catch (e) {
           console.log('invalid localStorage', book, e)
         }
       })
-    }
-    return [];
   }
 
   set books(books) {
@@ -23,7 +20,7 @@ export class Storage {
   }
 
   get hasBooks() {
-    return localStorage.length > 0;
+    return this.books.length > 0;
   }
 
 }

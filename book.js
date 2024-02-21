@@ -1,15 +1,16 @@
 export class Book {
   constructor(bookData) {
-    this.title = bookData.title;
-    this.author = bookData.author;
-    this.year = bookData.year;
-    this.genre = bookData.genre;
-    this.uuid = bookData.uuid;
+    this.title = bookData.title
+    this.author = bookData.author
+    this.year = bookData.year
+    this.genre = bookData.genre
+    this.uuid = bookData.uuid
+    this.rating = bookData.rating || bookData.rating_
   }
 
   set rating(value) {
     if (value >= 0 && value <= 10) {
-      this.rating_ = parseInt(value);
+      this.rating_ = parseInt(value)
     } else {
       throw new Error('Некорректное значение рейтинга')
     }

@@ -46,7 +46,7 @@ function exportBooksToJson(storage) {
   URL.revokeObjectURL(url);
 }
 
-if (storage.hasBooks) {
+if (storage.books?.length > 0) {
   storage.books.forEach(book => addBookElementToDom(generateBookElement(book)))
   exportButton.removeAttribute("disabled")
 }
