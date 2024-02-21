@@ -1,7 +1,7 @@
 ## Тестовое задание
 
-1. Пераая часть - в файле book.js
-2. GUI доступен и задеполен на github pages https://shulepovalidiya.github.io/otp_test_task/
+1. Первая часть - в файле book.js
+2. GUI доступен и задеплоен на github pages https://shulepovalidiya.github.io/otp_test_task/
 3. Реализован импорт и экспорт
 4. Реализована сортировка по разным полям
 
