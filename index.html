@@ -35,7 +35,8 @@
     <form class="export-import-form">
         <h2>Экспорт/импорт: </h2>
         <button class="add-book-form__export" disabled>Экспортировать книги</button>
-        <input type="file" accept="json">
+        <textarea class="add-book-form__import" ></textarea>
+        <button class="add-book-form__import-button" >Импортировать книги</button>
     </form>
 
     <p></p>
@@ -50,13 +51,13 @@
     </ul>
 </section>
 
-    <template class="book-template">
-        <li>
-            <p class="book__title"></p>
-            <button class="book__delete-button">Удалить</button>
-            <button class="book__edit-button">Редактировать</button>
-        </li>
-    </template>
-    <script src="index.js" type="module"></script>
+<template class="book-template">
+    <li>
+        <p class="book__title"></p>
+        <button class="book__delete-button">Удалить</button>
+        <button class="book__edit-button">Редактировать</button>
+    </li>
+</template>
+<script src="index.js" type="module"></script>
 </body>
 </html>

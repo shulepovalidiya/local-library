@@ -1,20 +1,59 @@
 import {Storage} from "./storage.js";
 import {Book} from "./book.js";
 
+/**
+ * Объект для работы с localStorage
+ * @type {Storage}
+ */
 const storage = new Storage('books');
 
+/**
+ * Контейнер для списка книг
+ * @type {Element}
+ */
 const container = document.querySelector(".books-list")
-const addBookForm = document.querySelector(".add-book-form")
-const exportButton = document.querySelector(".add-book-form__export")
-const select = document.querySelector(".sort-books-select")
 
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+/**
+ * Форма для добавления новой книги
+ * @type {Element}
+ */
+const addBookForm = document.querySelector(".add-book-form")
+
+/**
+ * Кнопка экспорта
+ * @type {Element}
+ */
+const exportButton = document.querySelector(".add-book-form__export")
+
+/**
+ * Select для сортировки
+ * @type {Element}
+ */
+const sortSelect = document.querySelector(".sort-books-select")
+
+/**
+ * Кнопка импорта
+ * @type {Element}
+ */
+const importButton = document.querySelector(".add-book-form__import-button")
+
+/**
+ * Поле ввода для импорта базы книг
+ * @type {Element}
+ */
+const importTextarea = document.querySelector(".add-book-form__import")
+
+// Рендерим список книг
+if (storage.books?.length > 0) {
+  storage.books.forEach(book => addBookElementToDom(generateBookElement(book)))
+  exportButton.removeAttribute("disabled")
 }
 
+/**
+ * Создаёт элемент книги
+ * @param book
+ * @returns {Node}
+ */
 function generateBookElement(book) {
   const bookElement = document.querySelector(".book-template").content.cloneNode(true);
   bookElement.querySelector(".book__title").textContent = book.getAll;
@@ -22,24 +61,38 @@ function generateBookElement(book) {
     e.target.parentNode.remove();
     storage.books = storage.books.filter(storageBook => storageBook.uuid !== book.uuid)
   })
-  bookElement.querySelector(".book__edit-button").addEventListener("click", (e) => {
-    let newData = prompt("Отредактируйте данные: ", book.toExport())
-    if (newData !== null) {
-      storage.books = storage.books.map(
-        storageBook => storageBook.uuid === book.uuid ? JSON.parse(newData) : storageBook
-      )
+  bookElement.querySelector(".book__edit-button").addEventListener("click", () => {
+    let newData = prompt("Отредактируйте данные: ", JSON.stringify(book.toExport()))
+    if (newData === null) {
+      return
     }
+    storage.books = storage.books.map(
+      storageBook => storageBook.uuid === book.uuid ? new Book({
+        ...JSON.parse(newData),
+        uuid: book.uuid
+      }) : storageBook
+    )
     location.reload();
   })
+
   return bookElement;
 }
 
+/**
+ * Добавляет узел с книгой в DOM
+ * @param bookElement
+ * @return void
+ */
 function addBookElementToDom(bookElement) {
   container.appendChild(bookElement)
 }
 
-function exportBooksToJson(storage) {
-  const blob = new Blob([storage.books.map(book => book.toExport())], { type: 'application/json' });
+/**
+ * Запуск Экспорта
+ * @param storage
+ */
+function exportBooks(storage) {
+  const blob = new Blob([JSON.stringify(storage.books.map(book => book.toExport()))], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const exportLink = document.createElement('a');
   exportLink.href = url;
@@ -48,11 +101,19 @@ function exportBooksToJson(storage) {
   URL.revokeObjectURL(url);
 }
 
-if (storage.books?.length > 0) {
-  storage.books.forEach(book => addBookElementToDom(generateBookElement(book)))
-  exportButton.removeAttribute("disabled")
+/**
+ * Сортирует объект по числовому полю
+ * @param books
+ * @param field
+ * @return {*}
+ */
+function sortBooksByNumberField(books, field) {
+  return books.sort((a, b) => b[field] - a[field]);
 }
 
+/**
+ * Обработчик сабмита формы — создаёт книгу и добавляет в DOM
+ */
 addBookForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const formData = new FormData(addBookForm);
@@ -62,7 +123,6 @@ addBookForm.addEventListener("submit", (e) => {
     year: formData.get("year"),
     genre: formData.get("genre"),
     rating: formData.get("rating"),
-    uuid: generateUUID(),
   }
   const book = new Book(bookData);
   addBookElementToDom(generateBookElement(book));
@@ -70,24 +130,45 @@ addBookForm.addEventListener("submit", (e) => {
   addBookForm.reset();
 })
 
-exportButton.addEventListener("click", () => exportBooksToJson(storage))
+/**
+ * Обработчик для кнопки экспорта
+ */
+exportButton.addEventListener("click", () => exportBooks(storage))
 
-function sortBooksByValue(books, value) {
-  return books.sort((a, b) => b[value] - a[value]);
-}
+/**
+ * Обработчик для кнопки импорта
+ */
+importButton.addEventListener('click', () => {
+  try {
+    let books = JSON.parse(importTextarea.value)
+    if (books.length === 0) {
+      return;
+    }
+    storage.books = books.map(book => new Book(book))
+  } catch (e) {
+    console.log('неверный ипорт', e)
+    return
+  }
+  importTextarea.value = ''
+})
 
-select.addEventListener("change", (e) => {
+/**
+ * обработчик для селекта сортировки
+ */
+sortSelect.addEventListener("change", (e) => {
   switch(e.target.options[e.target.selectedIndex].value) {
     case "Рейтинг":
-      storage.books = sortBooksByValue(storage.books, "rating")
+      storage.books = sortBooksByNumberField(storage.books, "rating")
       location.reload();
       break;
     case "Год":
-      storage.books = sortBooksByValue(storage.books, "year")
+      storage.books = sortBooksByNumberField(storage.books, "year")
       location.reload();
       break;
     case "Жанр":
-      storage.books = storage.books.sort((a, b) => a.localeCompare(b));
+      storage.books = storage.books.sort((a, b) => {
+        return a.genre.localeCompare(b.genre)
+      });
       break;
   }
 })

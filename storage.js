@@ -19,8 +19,4 @@ export class Storage {
     localStorage.setItem(this.key, JSON.stringify(books))
   }
 
-  get hasBooks() {
-    return this.books.length > 0;
-  }
-
 }
