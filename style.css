@@ -1,0 +1,16 @@
+.add-book-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+.add-book-form__element {
+    display: flex;
+    justify-content: space-between;
+}
+
+.container {
+    display: flex;
+    align-items: baseline;
+    gap: 50px;
+}

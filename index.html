@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Task</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<section class="container">
+    <form class="add-book-form">
+        <h2>Добавить книгу: </h2>
+        <p class="add-book-form__element">
+            <label for="title">Название книги:</label>
+            <input type="text" name="title" id="title" required>
+        </p>
+        <p class="add-book-form__element">
+            <label for="author">Автор:</label>
+            <input type="text" name="author" id="author" required>
+        </p>
+        <p class="add-book-form__element">
+            <label for="year">Год:</label>
+            <input type="number" name="year" id="year" required>
+        </p>
+        <p class="add-book-form__element">
+            <label for="genre">Жанр</label>
+            <input type="text" name="genre" id="genre" required>
+        </p>
+        <p class="add-book-form__element">
+            <label for="rating">Рейтинг</label>
+            <input type="number" name="rating" id="rating" min="0" max="10" required>
+        </p>
+        <button type="submit" class="add-book-form__submit">Добавить книгу</button>
+    </form>
+    <button class="add-book-form__export" disabled>Экспортировать книги</button>
+    <ul class="books-list">
+        <h2>Список книг:</h2>
+    </ul>
+</section>
+
+    <template class="book-template">
+        <li>
+            <p class="book__title"></p>
+            <button class="book__delete-button">Удалить</button>
+            <button class="book__edit-button">Редактировать</button>
+        </li>
+    </template>
+    <script src="index.js" type="module"></script>
+</body>
+</html>
