@@ -6,6 +6,7 @@ const storage = new Storage('books');
 const container = document.querySelector(".books-list")
 const addBookForm = document.querySelector(".add-book-form")
 const exportButton = document.querySelector(".add-book-form__export")
+const select = document.querySelector(".sort-books-select")
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -22,9 +23,11 @@ function generateBookElement(book) {
     storage.books = storage.books.filter(storageBook => storageBook.uuid !== book.uuid)
   })
   bookElement.querySelector(".book__edit-button").addEventListener("click", (e) => {
-    let newData = prompt("Отредактируйте данные: ", JSON.stringify(book))
+    let newData = prompt("Отредактируйте данные: ", book.toExport())
     if (newData !== null) {
-      storage.books = storage.books.map(storageBook => storageBook.uuid === book.uuid ? JSON.parse(newData) : storageBook)
+      storage.books = storage.books.map(
+        storageBook => storageBook.uuid === book.uuid ? JSON.parse(newData) : storageBook
+      )
     }
     location.reload();
   })
@@ -36,8 +39,7 @@ function addBookElementToDom(bookElement) {
 }
 
 function exportBooksToJson(storage) {
-  const booksInJson = JSON.stringify(storage.books);
-  const blob = new Blob([booksInJson], { type: 'application/json' });
+  const blob = new Blob([storage.books.map(book => book.toExport())], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const exportLink = document.createElement('a');
   exportLink.href = url;
@@ -69,3 +71,23 @@ addBookForm.addEventListener("submit", (e) => {
 })
 
 exportButton.addEventListener("click", () => exportBooksToJson(storage))
+
+function sortBooksByValue(books, value) {
+  return books.sort((a, b) => b[value] - a[value]);
+}
+
+select.addEventListener("change", (e) => {
+  switch(e.target.options[e.target.selectedIndex].value) {
+    case "Рейтинг":
+      storage.books = sortBooksByValue(storage.books, "rating")
+      location.reload();
+      break;
+    case "Год":
+      storage.books = sortBooksByValue(storage.books, "year")
+      location.reload();
+      break;
+    case "Жанр":
+      storage.books = storage.books.sort((a, b) => a.localeCompare(b));
+      break;
+  }
+})

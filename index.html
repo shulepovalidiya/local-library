@@ -31,7 +31,20 @@
         </p>
         <button type="submit" class="add-book-form__submit">Добавить книгу</button>
     </form>
-    <button class="add-book-form__export" disabled>Экспортировать книги</button>
+
+    <form class="export-import-form">
+        <h2>Экспорт/импорт: </h2>
+        <button class="add-book-form__export" disabled>Экспортировать книги</button>
+        <input type="file" accept="json">
+    </form>
+
+    <p></p>
+    <select class="sort-books-select">
+        <option>Сортировать по:</option>
+        <option value="Рейтинг">Рейтингу</option>
+        <option value="Год">Году</option>
+        <option value="Жанр">Жанру</option>
+    </select>
     <ul class="books-list">
         <h2>Список книг:</h2>
     </ul>

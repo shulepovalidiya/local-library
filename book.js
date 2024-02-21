@@ -1,5 +1,20 @@
 export class Book {
   constructor(bookData) {
+    if (!bookData.title) {
+      throw new Error("Не задано название")
+    }
+    if (!bookData.author) {
+      throw new Error("Не задан автор")
+    }
+    if (!bookData.year) {
+      throw new Error("Не задан год")
+    }
+    if (!bookData.genre) {
+      throw new Error("Не задан жанр")
+    }
+    if (!bookData.rating && !bookData.rating_) {
+      throw new Error("Не задан рейтинг")
+    }
     this.title = bookData.title
     this.author = bookData.author
     this.year = bookData.year
@@ -28,6 +43,16 @@ export class Book {
     return this.getAll
   }
 
+  toExport() {
+    let {title, author, year, genre, rating} = this;
+    return JSON.stringify({
+      title,
+      author,
+      year,
+      genre,
+      rating
+    })
+  }
 }
 
 const booksData = [
@@ -74,4 +99,3 @@ console.log(filterBooksByGenre(books, "Повесть"))
 console.log(filterBooksByGenre(books, ""))
 console.log(findBookByTitle(books, "1984"))
 console.log(findBookByTitle(books, ""))
-

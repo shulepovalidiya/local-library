@@ -6,13 +6,13 @@ export class Storage {
   }
 
   get books() {
-      return JSON.parse(localStorage.getItem(this.key) || "[]").map(book => {
-        try {
-          return new Book(book)
-        } catch (e) {
-          console.log('invalid localStorage', book, e)
-        }
-      })
+    return JSON.parse(localStorage.getItem(this.key) || "[]").map(book => {
+      try {
+        return new Book(book)
+      } catch (e) {
+        console.log('invalid localStorage', book, e)
+      }
+    })
   }
 
   set books(books) {
