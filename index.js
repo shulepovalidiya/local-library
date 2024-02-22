@@ -78,6 +78,10 @@ container.addEventListener('click', (e) => {
       ...JSON.parse(newData),
       uuid: bookUUID
     }))
+    //запускаем сортировку, чтобы она соответствовала выбранной на данный момент
+    if (sortSelect?.value) {
+      changeBooksSort(sortSelect?.value)
+    }
   }
 })
 
@@ -101,7 +105,7 @@ function reRenderBooks() {
 
 /**
  * Удаляет книгу из DOM и из storage
- * @param uuid {string}
+ * @param uuid
  */
 function removeBookByUUID(uuid) {
   document.querySelector(`[data-book-id="${uuid}"]`).remove();
@@ -110,8 +114,8 @@ function removeBookByUUID(uuid) {
 
 /**
  * Редактирует книгу в DOM и в storage
- * @param uuid {string}
- * @param newBook {Book}
+ * @param uuid
+ * @param newBook
  */
 function updateBookByUUID(uuid, newBook) {
   let bookForEdit = document.querySelector(`[data-book-id="${uuid}"]`);
@@ -121,7 +125,7 @@ function updateBookByUUID(uuid, newBook) {
 
 /**
  * Создаёт элемент книги
- * @param book {Book}
+ * @param book
  * @returns {Node}
  */
 function generateBookElement(book) {
@@ -133,7 +137,7 @@ function generateBookElement(book) {
 
 /**
  * Добавляет узел с книгой в DOM
- * @param bookElement {Element}
+ * @param bookElement
  * @return void
  */
 function addBookElementToDom(bookElement) {
@@ -142,7 +146,7 @@ function addBookElementToDom(bookElement) {
 
 /**
  * Запуск Экспорта
- * @param storage {Storage}
+ * @param storage
  */
 function exportBooks(storage) {
   const blob = new Blob([JSON.stringify(storage.books.map(book => book.toExport()))], { type: 'application/json' });
@@ -208,8 +212,7 @@ sortSelect.addEventListener("change", (e) => {
 
 /**
  * Меняет сортировку в storage и в списке
- * @param sort{string}
- * @return void
+ * @param sort
  */
 function changeBooksSort(sort) {
   const isSorted = storage.sortBy(sort)
