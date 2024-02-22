@@ -74,6 +74,9 @@ container.addEventListener('click', (e) => {
 
     const currentBook = storage.books.find(el => el.uuid === bookUUID)
     let newData = prompt("Отредактируйте данные: ", JSON.stringify(currentBook.toExport()))
+    if (newData === null) {
+      return
+    }
     updateBookByUUID(bookUUID, new Book({
       ...JSON.parse(newData),
       uuid: bookUUID
