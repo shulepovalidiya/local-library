@@ -12,7 +12,7 @@ export class Book {
     if (!bookData.genre) {
       throw new Error("Не задан жанр")
     }
-    if (!bookData.rating && !bookData.rating_) {
+    if (!bookData.rating && !bookData.rating_ && bookData.rating !== 0 && bookData.rating_ !== 0) {
       throw new Error("Не задан рейтинг")
     }
     this.title = bookData.title
