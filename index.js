@@ -49,22 +49,77 @@ if (storage.books?.length > 0) {
   exportButton.removeAttribute("disabled")
 }
 
+/**
+ *  общий eventListener для книг - ловит события кликов по кнопкам редактирования и удаления, обрабатывает их
+ */
+container.addEventListener('click', (e) => {
+  // элемент по которому кликнули
+  const eventTarget = e.target
+
+  // удаление
+  if (eventTarget.classList.contains('book__delete-button')) {
+    const bookUUID = eventTarget.parentNode.getAttribute('data-book-id')
+    if (!bookUUID) {
+      return
+    }
+    removeBookByUUID(bookUUID)
+  }
+
+  // редактирование
+  if (eventTarget.classList.contains('book__edit-button')) {
+    const bookUUID = eventTarget.parentNode.getAttribute('data-book-id')
+    if (!bookUUID) {
+      return
+    }
+
+    const currentBook = storage.books.find(el => el.uuid === bookUUID)
+    let newData = prompt("Отредактируйте данные: ", JSON.stringify(currentBook.toExport()))
+    updateBookByUUID(bookUUID, new Book({
+      ...JSON.parse(newData),
+      uuid: bookUUID
+    }))
+  }
+})
+
+/**
+ * Рендер книг - рендерит список книг из storage
+ */
 function renderBooks() {
   storage.books.forEach(book => addBookElementToDom(generateBookElement(book)))
 }
 
+/**
+ * Ререндер книг - удаляет все существубющие из списка и рендерит заново из storage
+ */
 function reRenderBooks() {
   // удалить все старые
   const allBooks = document.querySelectorAll('[data-book-id]');
-  const uuidsForDelete = new Set(storage.books.map(book => book.uuid))
   allBooks.forEach(bookDomElement => {
-    if (uuidsForDelete.has(bookDomElement.getAttribute('data-book-id'))) {
-      bookDomElement.remove()
-    }
-  });
+    bookDomElement.remove()
+  })
 
   // отрендерить все что есть в localStorage
   renderBooks()
+}
+
+/**
+ * Удаляет книгу из DOM и из storage
+ * @param uuid
+ */
+function removeBookByUUID(uuid) {
+  document.querySelector(`[data-book-id="${uuid}"]`).remove();
+  storage.books = storage.books.filter(storageBook => storageBook.uuid !== uuid)
+}
+
+/**
+ * Редактирует книгу в DOM и в storage
+ * @param uuid
+ * @param newBook
+ */
+function updateBookByUUID(uuid, newBook) {
+  let bookForEdit = document.querySelector(`[data-book-id="${uuid}"]`);
+  bookForEdit.querySelector(".book__title").textContent = newBook.getAll;
+  storage.books = storage.books.map(storageBook => storageBook.uuid === uuid ? newBook : storageBook)
 }
 
 /**
@@ -75,23 +130,6 @@ function reRenderBooks() {
 function generateBookElement(book) {
   const bookElement = document.querySelector(".book-template").content.cloneNode(true);
   bookElement.querySelector(".book__title").textContent = book.getAll;
-  bookElement.querySelector(".book__delete-button").addEventListener("click", (e) => {
-    e.target.parentNode.remove();
-    storage.books = storage.books.filter(storageBook => storageBook.uuid !== book.uuid)
-  })
-  bookElement.querySelector(".book__edit-button").addEventListener("click", () => {
-    let newData = prompt("Отредактируйте данные: ", JSON.stringify(book.toExport()))
-    if (newData === null) {
-      return
-    }
-    storage.books = storage.books.map(
-      storageBook => storageBook.uuid === book.uuid ? new Book({
-        ...JSON.parse(newData),
-        uuid: book.uuid
-      }) : storageBook
-    )
-    reRenderBooks();
-  })
   bookElement.querySelector("li").setAttribute("data-book-id", book.uuid)
   return bookElement;
 }
