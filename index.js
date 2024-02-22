@@ -93,10 +93,7 @@ function renderBooks() {
  */
 function reRenderBooks() {
   // удалить все старые
-  const allBooks = document.querySelectorAll('[data-book-id]');
-  allBooks.forEach(bookDomElement => {
-    bookDomElement.remove()
-  })
+  document.querySelectorAll('[data-book-id]').forEach(bookDomElement => bookDomElement.remove());
 
   // отрендерить все что есть в localStorage
   renderBooks()
@@ -158,16 +155,6 @@ function exportBooks(storage) {
 }
 
 /**
- * Сортирует объект по числовому полю
- * @param books
- * @param field
- * @return {*}
- */
-function sortBooksByNumberField(books, field) {
-  return books.sort((a, b) => b[field] - a[field]);
-}
-
-/**
  * Обработчик сабмита формы — создаёт книгу и добавляет в DOM
  */
 addBookForm.addEventListener("submit", (e) => {
@@ -183,6 +170,10 @@ addBookForm.addEventListener("submit", (e) => {
   const book = new Book(bookData);
   addBookElementToDom(generateBookElement(book));
   storage.books = [...storage.books, book]
+  // нужно запустить сортировку, чтобы соответствовала тому какая выбрана сечас
+  if (sortSelect?.value) {
+    changeBooksSort(sortSelect?.value)
+  }
   addBookForm.reset();
 })
 
@@ -212,18 +203,16 @@ importButton.addEventListener('click', () => {
  * обработчик для селекта сортировки
  */
 sortSelect.addEventListener("change", (e) => {
-  switch(e.target.options[e.target.selectedIndex].value) {
-    case "Рейтинг":
-      storage.books = sortBooksByNumberField(storage.books, "rating")
-      reRenderBooks();
-      break;
-    case "Год":
-      storage.books = sortBooksByNumberField(storage.books, "year")
-      reRenderBooks();
-      break;
-    case "Жанр":
-      storage.books = storage.books.sort((a, b) => a.genre.localeCompare(b.genre));
-      reRenderBooks();
-      break;
-  }
+  changeBooksSort(e.target.options[e.target.selectedIndex].value)
 })
+
+/**
+ * Меняет сортировку в storage и в списке
+ * @param sort
+ */
+function changeBooksSort(sort) {
+  const isSorted = storage.sortBy(sort)
+  if (isSorted) {
+    reRenderBooks()
+  }
+}

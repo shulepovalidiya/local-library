@@ -1,8 +1,9 @@
 import {Book} from "./book.js";
+import {sortObjectsByNumberField, sortObjectsByStringField} from "./utils.js";
 
 export class Storage {
   constructor(localStorageKey) {
-    this.key = localStorageKey;
+    this.key = localStorageKey
   }
 
   get books() {
@@ -19,4 +20,22 @@ export class Storage {
     localStorage.setItem(this.key, JSON.stringify(books))
   }
 
+  sortBy(sort) {
+    let isSorted = false
+    switch (sort) {
+      case "Рейтинг":
+        this.books = sortObjectsByNumberField(this.books, "rating")
+        isSorted = true
+        break;
+      case "Год":
+        this.books = sortObjectsByNumberField(this.books, "year")
+        isSorted = true
+        break;
+      case "Жанр":
+        this.books = sortObjectsByStringField(this.books, "genre");
+        isSorted = true
+        break;
+    }
+    return isSorted
+  }
 }
