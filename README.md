@@ -34,7 +34,7 @@
 ## Комментарии к выполненному заданию
 
 1. Первая часть — реализация класса `Book` и функций `sortBooksByRating`, `filterBooksByGenre`, `findBookByTitle` — в файле `book.js`
-2. GUI доступен и задеплоен на GitHub Pages: https://shulepovalidiya.github.io/local_library/,
+2. GUI доступен и задеплоен на GitHub Pages: https://shulepovalidiya.github.io/local-library/,
 3. Реализована возможность экспорта и импорта базы книг в JSON,
 4. Реализована сортировка по разным полям — рейтингу, году, жанру.
 
